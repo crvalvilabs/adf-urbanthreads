@@ -5,6 +5,14 @@
 			"referenceName": "ls_dl_urbanstorage",
 			"type": "LinkedServiceReference"
 		},
+		"parameters": {
+			"pFolderName": {
+				"type": "string"
+			},
+			"pFileName": {
+				"type": "string"
+			}
+		},
 		"folder": {
 			"name": "bronze"
 		},
@@ -13,7 +21,14 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
-				"folderPath": "landing",
+				"fileName": {
+					"value": "@dataset().pFileName",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@dataset().pFolderName",
+					"type": "Expression"
+				},
 				"fileSystem": "lakehouse"
 			},
 			"compressionCodec": "snappy"
