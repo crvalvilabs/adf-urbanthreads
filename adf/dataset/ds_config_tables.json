@@ -1,0 +1,82 @@
+{
+	"name": "ds_config_tables",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_dl_urbanstorage",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "extract"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "config_tables.json",
+				"folderPath": "tables",
+				"fileSystem": "config"
+			}
+		},
+		"schema": {
+			"type": "object",
+			"properties": {
+				"catalogo.Categoria": {
+					"type": "object",
+					"properties": {
+						"columns": {
+							"type": "array",
+							"items": {
+								"type": "string"
+							}
+						}
+					}
+				},
+				"catalogo.Producto": {
+					"type": "object",
+					"properties": {
+						"columns": {
+							"type": "array",
+							"items": {
+								"type": "string"
+							}
+						}
+					}
+				},
+				"personas.Cliente": {
+					"type": "object",
+					"properties": {
+						"columns": {
+							"type": "array",
+							"items": {
+								"type": "string"
+							}
+						}
+					}
+				},
+				"ventas.VentaDetalle": {
+					"type": "object",
+					"properties": {
+						"columns": {
+							"type": "array",
+							"items": {
+								"type": "string"
+							}
+						}
+					}
+				},
+				"ventas.VentaEncabezado": {
+					"type": "object",
+					"properties": {
+						"columns": {
+							"type": "array",
+							"items": {
+								"type": "string"
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
