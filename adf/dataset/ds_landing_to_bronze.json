@@ -1,0 +1,23 @@
+{
+	"name": "ds_landing_to_bronze",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_dl_urbanstorage",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "bronze"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "landing",
+				"fileSystem": "lakehouse"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": []
+	}
+}

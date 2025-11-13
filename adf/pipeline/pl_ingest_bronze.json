@@ -13,39 +13,47 @@
 					"secureOutput": false,
 					"secureInput": false
 				},
-				"userProperties": []
-			},
-			{
-				"name": "Fail",
-				"type": "Fail",
-				"dependsOn": [
-					{
-						"activity": "Notebook",
-						"dependencyConditions": [
-							"Failed"
-						]
-					}
-				],
-				"userProperties": []
+				"userProperties": [],
+				"linkedServiceName": {
+					"referenceName": "ls_databricks",
+					"type": "LinkedServiceReference"
+				}
 			},
 			{
 				"name": "Lookup",
 				"type": "Lookup",
-				"dependsOn": [
-					{
-						"activity": "Notebook",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
+				"dependsOn": [],
 				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
+					"timeout": "0.00:13:00",
+					"retry": 1,
 					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
 					"secureInput": false
 				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "ParquetSource",
+						"storeSettings": {
+							"type": "AzureBlobFSReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "ParquetReadSettings"
+						}
+					},
+					"dataset": {
+						"referenceName": "ds_landing_data",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "ForEach1",
+				"type": "ForEach",
+				"dependsOn": [],
 				"userProperties": []
 			}
 		],
