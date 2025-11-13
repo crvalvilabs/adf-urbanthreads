@@ -303,7 +303,8 @@
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobFSLocation",
-						"fileSystem": "landing"
+						"folderPath": "landing",
+						"fileSystem": "lakehouse"
 					}
 				}
 			},
