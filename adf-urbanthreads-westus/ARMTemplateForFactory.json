@@ -1,0 +1,421 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "adf-urbanthreads-westus"
+		},
+		"ls_azsql_urban_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'ls_azsql_urban'"
+		},
+		"ls_databricks_accessToken": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accessToken' of 'ls_databricks'"
+		},
+		"ls_dl_urbanstorage_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'ls_dl_urbanstorage'"
+		},
+		"ls_azsql_urban_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "sqlsrvr-urban-dev.database.windows.net"
+		},
+		"ls_azsql_urban_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "sqldb-urban-dev"
+		},
+		"ls_azsql_urban_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "sqladmin"
+		},
+		"ls_dl_urbanstorage_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://dlurbanstorage.dfs.core.windows.net/"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/pl_azsql_extract_data')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Lookup",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.00:10:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "JsonSource",
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": false,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "JsonReadSettings"
+								}
+							},
+							"dataset": {
+								"referenceName": "ds_config_tables",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"firstRowOnly": false
+						}
+					},
+					{
+						"name": "ForEach",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "Lookup",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('Lookup').output.value",
+								"type": "Expression"
+							},
+							"isSequential": true,
+							"activities": [
+								{
+									"name": "Copy data",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.00:10:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "AzureSqlSource",
+											"queryTimeout": "02:00:00",
+											"partitionOption": "None"
+										},
+										"sink": {
+											"type": "ParquetSink",
+											"storeSettings": {
+												"type": "AzureBlobFSWriteSettings"
+											},
+											"formatSettings": {
+												"type": "ParquetWriteSettings"
+											}
+										},
+										"enableStaging": false,
+										"translator": {
+											"type": "TabularTranslator",
+											"typeConversion": true,
+											"typeConversionSettings": {
+												"allowDataTruncation": true,
+												"treatBooleanAsNumber": false
+											}
+										}
+									},
+									"inputs": [
+										{
+											"referenceName": "ds_azql_urban",
+											"type": "DatasetReference",
+											"parameters": {
+												"pSchema": {
+													"value": "@split(item().value, '.')[0]",
+													"type": "Expression"
+												},
+												"pTableName": {
+													"value": "@split(item().value, '.')[1]",
+													"type": "Expression"
+												}
+											}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "ds_landing_data",
+											"type": "DatasetReference",
+											"parameters": {
+												"pFolderName": {
+													"value": "@split(item().value, '.')[1]",
+													"type": "Expression"
+												}
+											}
+										}
+									]
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_config_tables')]",
+				"[concat(variables('factoryId'), '/datasets/ds_azql_urban')]",
+				"[concat(variables('factoryId'), '/datasets/ds_landing_data')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_azql_urban')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_azsql_urban",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"pSchema": {
+						"type": "string"
+					},
+					"pTableName": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "extract"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "CategoriaID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Nombre",
+						"type": "nvarchar"
+					},
+					{
+						"name": "GeneroObjetivo",
+						"type": "char"
+					}
+				],
+				"typeProperties": {
+					"schema": {
+						"value": "@dataset().pSchema",
+						"type": "Expression"
+					},
+					"table": {
+						"value": "@dataset().pTableName",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_azsql_urban')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_config_tables')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_dl_urbanstorage",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "extract"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "config_tables.json",
+						"folderPath": "tables",
+						"fileSystem": "config"
+					}
+				},
+				"schema": {
+					"type": "object",
+					"properties": {
+						"catalogo.Categoria": {
+							"type": "object",
+							"properties": {
+								"columns": {
+									"type": "array",
+									"items": {
+										"type": "string"
+									}
+								}
+							}
+						},
+						"catalogo.Producto": {
+							"type": "object",
+							"properties": {
+								"columns": {
+									"type": "array",
+									"items": {
+										"type": "string"
+									}
+								}
+							}
+						},
+						"personas.Cliente": {
+							"type": "object",
+							"properties": {
+								"columns": {
+									"type": "array",
+									"items": {
+										"type": "string"
+									}
+								}
+							}
+						},
+						"ventas.VentaDetalle": {
+							"type": "object",
+							"properties": {
+								"columns": {
+									"type": "array",
+									"items": {
+										"type": "string"
+									}
+								}
+							}
+						},
+						"ventas.VentaEncabezado": {
+							"type": "object",
+							"properties": {
+								"columns": {
+									"type": "array",
+									"items": {
+										"type": "string"
+									}
+								}
+							}
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_dl_urbanstorage')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_landing_data')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_dl_urbanstorage",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"pFolderName": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "landing"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": {
+							"value": "@dataset().pFolderName",
+							"type": "Expression"
+						},
+						"fileSystem": "lakehouse"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_dl_urbanstorage')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ls_azsql_urban')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"server": "[parameters('ls_azsql_urban_properties_typeProperties_server')]",
+					"database": "[parameters('ls_azsql_urban_properties_typeProperties_database')]",
+					"encrypt": "optional",
+					"trustServerCertificate": true,
+					"authenticationType": "SQL",
+					"userName": "[parameters('ls_azsql_urban_properties_typeProperties_userName')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('ls_azsql_urban_password')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ls_databricks')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureDatabricks",
+				"typeProperties": {
+					"domain": "https://adb-1790828925713292.12.azuredatabricks.net",
+					"accessToken": {
+						"type": "SecureString",
+						"value": "[parameters('ls_databricks_accessToken')]"
+					},
+					"newClusterNodeType": "Standard_DS3_v2",
+					"newClusterNumOfWorker": "1",
+					"newClusterSparkEnvVars": {
+						"PYSPARK_PYTHON": "/databricks/python3/bin/python3"
+					},
+					"newClusterVersion": "16.4.x-scala2.13",
+					"clusterOption": "Fixed",
+					"newClusterInitScripts": []
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ls_dl_urbanstorage')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('ls_dl_urbanstorage_properties_typeProperties_url')]",
+					"accountKey": {
+						"type": "SecureString",
+						"value": "[parameters('ls_dl_urbanstorage_accountKey')]"
+					}
+				}
+			},
+			"dependsOn": []
+		}
+	]
+}

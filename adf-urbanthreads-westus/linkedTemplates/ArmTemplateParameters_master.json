@@ -1,0 +1,36 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "adf-urbanthreads-westus"
+		},
+		"ls_azsql_urban_password": {
+			"value": ""
+		},
+		"ls_databricks_accessToken": {
+			"value": ""
+		},
+		"ls_dl_urbanstorage_accountKey": {
+			"value": ""
+		},
+		"ls_azsql_urban_properties_typeProperties_server": {
+			"value": "sqlsrvr-urban-dev.database.windows.net"
+		},
+		"ls_azsql_urban_properties_typeProperties_database": {
+			"value": "sqldb-urban-dev"
+		},
+		"ls_azsql_urban_properties_typeProperties_userName": {
+			"value": "sqladmin"
+		},
+		"ls_dl_urbanstorage_properties_typeProperties_url": {
+			"value": "https://dlurbanstorage.dfs.core.windows.net/"
+		},
+		"containerUri": {
+			"value": ""
+		},
+		"containerSasToken": {
+			"value": ""
+		}
+	}
+}
