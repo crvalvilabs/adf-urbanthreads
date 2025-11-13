@@ -5,11 +5,6 @@
 			"referenceName": "ls_dl_urbanstorage",
 			"type": "LinkedServiceReference"
 		},
-		"parameters": {
-			"pFolderPath": {
-				"type": "string"
-			}
-		},
 		"folder": {
 			"name": "bronze"
 		},
