@@ -47,7 +47,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"items": {
-						"value": "@activity('Lookup').output.value",
+						"value": "@activity('Lookup').output.tables",
 						"type": "Expression"
 					},
 					"isSequential": true,
@@ -95,11 +95,11 @@
 									"type": "DatasetReference",
 									"parameters": {
 										"pSchema": {
-											"value": "@split(item().value, '.')[0]",
+											"value": "@item().schema",
 											"type": "Expression"
 										},
 										"pTableName": {
-											"value": "@split(item().value, '.')[1]",
+											"value": "@item().table",
 											"type": "Expression"
 										}
 									}
@@ -111,7 +111,7 @@
 									"type": "DatasetReference",
 									"parameters": {
 										"pFolderName": {
-											"value": "@split(item().value, '.')[1]",
+											"value": "@item().name",
 											"type": "Expression"
 										}
 									}
