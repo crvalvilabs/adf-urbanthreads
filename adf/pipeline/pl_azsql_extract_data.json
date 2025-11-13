@@ -111,7 +111,7 @@
 									"type": "DatasetReference",
 									"parameters": {
 										"pFolderName": {
-											"value": "@item().name",
+											"value": "@concat('landing/', item().table)",
 											"type": "Expression"
 										}
 									}
