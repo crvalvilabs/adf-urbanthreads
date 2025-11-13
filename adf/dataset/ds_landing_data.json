@@ -1,0 +1,31 @@
+{
+	"name": "ds_landing_data",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_dl_urbanstorage",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"pFolderName": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "landing"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": {
+					"value": "@dataset().pFolderName",
+					"type": "Expression"
+				},
+				"fileSystem": "lakehouse"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": []
+	}
+}
