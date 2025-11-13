@@ -21,10 +21,6 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
-				"folderPath": {
-					"value": "@dataset().pFolderName",
-					"type": "Expression"
-				},
 				"fileSystem": "lakehouse"
 			},
 			"compressionCodec": "snappy"
