@@ -113,6 +113,10 @@
 										"pFolderName": {
 											"value": "@concat('landing/', item().table)",
 											"type": "Expression"
+										},
+										"pFileName": {
+											"value": "@item().table",
+											"type": "Expression"
 										}
 									}
 								}
