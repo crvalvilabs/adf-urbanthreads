@@ -158,6 +158,10 @@
 												"pFolderName": {
 													"value": "@concat('landing/', item().table)",
 													"type": "Expression"
+												},
+												"pFileName": {
+													"value": "@concat(item().table, '.parquet')",
+													"type": "Expression"
 												}
 											}
 										}
@@ -170,12 +174,161 @@
 				"policy": {
 					"elapsedTimeMetric": {}
 				},
+				"folder": {
+					"name": "Extract"
+				},
 				"annotations": []
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/ds_config_tables')]",
 				"[concat(variables('factoryId'), '/datasets/ds_azql_urban')]",
 				"[concat(variables('factoryId'), '/datasets/ds_landing_data')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pl_ingest_bronze')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Get Metadata",
+						"type": "GetMetadata",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.00:13:00",
+							"retry": 1,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataset": {
+								"referenceName": "ds_landing_binary",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"fieldList": [
+								"childItems"
+							],
+							"storeSettings": {
+								"type": "AzureBlobFSReadSettings",
+								"recursive": true,
+								"enablePartitionDiscovery": false
+							},
+							"formatSettings": {
+								"type": "BinaryReadSettings"
+							}
+						}
+					},
+					{
+						"name": "ForEach",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "Get Metadata",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('Get Metadata').output.childItems",
+								"type": "Expression"
+							},
+							"isSequential": true,
+							"activities": [
+								{
+									"name": "Lookup",
+									"type": "Lookup",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.00:13:00",
+										"retry": 1,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "ParquetSource",
+											"storeSettings": {
+												"type": "AzureBlobFSReadSettings",
+												"recursive": true,
+												"wildcardFolderPath": {
+													"value": "@item().name",
+													"type": "Expression"
+												},
+												"wildcardFileName": "*.parquet",
+												"enablePartitionDiscovery": false
+											},
+											"formatSettings": {
+												"type": "ParquetReadSettings"
+											}
+										},
+										"dataset": {
+											"referenceName": "ds_landing_to_bronze",
+											"type": "DatasetReference",
+											"parameters": {}
+										},
+										"firstRowOnly": false
+									}
+								},
+								{
+									"name": "Notebook",
+									"type": "DatabricksNotebook",
+									"dependsOn": [
+										{
+											"activity": "Lookup",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "0.00:10:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"notebookPath": {
+											"value": "@pipeline().parameters.pFileName",
+											"type": "Expression"
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "ls_databricks",
+										"type": "LinkedServiceReference"
+									}
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"parameters": {
+					"pFileName": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "Ingest"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_landing_binary')]",
+				"[concat(variables('factoryId'), '/datasets/ds_landing_to_bronze')]",
+				"[concat(variables('factoryId'), '/linkedServices/ls_databricks')]"
 			]
 		},
 		{
@@ -228,6 +381,49 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/ls_azsql_urban')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_bronze_data')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_dl_urbanstorage",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"pFolderName": {
+						"type": "string"
+					},
+					"pFileName": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "bronze"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@dataset().pFileName",
+							"type": "Expression"
+						},
+						"folderPath": {
+							"value": "@dataset().pFolderName",
+							"type": "Expression"
+						},
+						"fileSystem": "lakehouse"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_dl_urbanstorage')]"
 			]
 		},
 		{
@@ -318,6 +514,31 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/ds_landing_binary')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_dl_urbanstorage",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "bronze"
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileSystem": "landing"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_dl_urbanstorage')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/ds_landing_data')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -329,6 +550,9 @@
 				"parameters": {
 					"pFolderName": {
 						"type": "string"
+					},
+					"pFileName": {
+						"type": "string"
 					}
 				},
 				"folder": {
@@ -339,10 +563,41 @@
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@dataset().pFileName",
+							"type": "Expression"
+						},
 						"folderPath": {
 							"value": "@dataset().pFolderName",
 							"type": "Expression"
 						},
+						"fileSystem": "lakehouse"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_dl_urbanstorage')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_landing_to_bronze')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_dl_urbanstorage",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "bronze"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
 						"fileSystem": "lakehouse"
 					},
 					"compressionCodec": "snappy"
