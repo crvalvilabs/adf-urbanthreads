@@ -94,7 +94,11 @@
 						]
 					}
 				],
-				"userProperties": []
+				"userProperties": [],
+				"typeProperties": {
+					"message": "",
+					"errorCode": ""
+				}
 			}
 		],
 		"parameters": {
