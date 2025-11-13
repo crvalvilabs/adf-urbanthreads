@@ -1,0 +1,9 @@
+{
+	"name": "adf-urbanthreads-westus",
+	"location": "westus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "9dd7a69a-9064-44bb-838c-7bf8cb8f067e",
+		"tenantId": "13e46401-caf6-4c02-b74f-8eb400ee6812"
+	}
+}
