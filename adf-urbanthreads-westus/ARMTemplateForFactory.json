@@ -103,7 +103,7 @@
 									"dependsOn": [],
 									"policy": {
 										"timeout": "0.00:10:00",
-										"retry": 0,
+										"retry": 1,
 										"retryIntervalInSeconds": 30,
 										"secureOutput": false,
 										"secureInput": false
@@ -156,7 +156,7 @@
 											"type": "DatasetReference",
 											"parameters": {
 												"pFolderName": {
-													"value": "@item().name",
+													"value": "@concat('landing/', item().table)",
 													"type": "Expression"
 												}
 											}
