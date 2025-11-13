@@ -24,6 +24,7 @@
 					],
 					"storeSettings": {
 						"type": "AzureBlobFSReadSettings",
+						"recursive": true,
 						"enablePartitionDiscovery": false
 					},
 					"formatSettings": {
@@ -120,11 +121,6 @@
 				}
 			}
 		],
-		"parameters": {
-			"pFileName": {
-				"type": "string"
-			}
-		},
 		"folder": {
 			"name": "Ingest"
 		},
