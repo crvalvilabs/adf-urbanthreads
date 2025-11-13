@@ -8,9 +8,6 @@
 		"parameters": {
 			"pFolderPath": {
 				"type": "string"
-			},
-			"pFileName": {
-				"type": "string"
 			}
 		},
 		"folder": {
