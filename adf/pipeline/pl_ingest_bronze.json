@@ -121,6 +121,11 @@
 				}
 			}
 		],
+		"parameters": {
+			"pFileName": {
+				"type": "string"
+			}
+		},
 		"folder": {
 			"name": "Ingest"
 		},
