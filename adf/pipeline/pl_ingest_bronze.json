@@ -14,6 +14,12 @@
 					"secureInput": false
 				},
 				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": {
+						"value": "@pipeline().parameters.pFileName",
+						"type": "Expression"
+					}
+				},
 				"linkedServiceName": {
 					"referenceName": "ls_databricks",
 					"type": "LinkedServiceReference"
@@ -71,6 +77,11 @@
 				}
 			}
 		],
+		"parameters": {
+			"pFileName": {
+				"type": "string"
+			}
+		},
 		"folder": {
 			"name": "Ingest"
 		},
