@@ -1,0 +1,47 @@
+{
+	"name": "ds_azql_urban",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_azsql_urban",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"pSchema": {
+				"type": "string"
+			},
+			"pTableName": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "extract"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "CategoriaID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Nombre",
+				"type": "nvarchar"
+			},
+			{
+				"name": "GeneroObjetivo",
+				"type": "char"
+			}
+		],
+		"typeProperties": {
+			"schema": {
+				"value": "@dataset().pSchema",
+				"type": "Expression"
+			},
+			"table": {
+				"value": "@dataset().pTableName",
+				"type": "Expression"
+			}
+		}
+	}
+}
