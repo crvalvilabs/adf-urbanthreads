@@ -68,6 +68,11 @@
 									"storeSettings": {
 										"type": "AzureBlobFSReadSettings",
 										"recursive": true,
+										"wildcardFolderPath": {
+											"value": "@item().name",
+											"type": "Expression"
+										},
+										"wildcardFileName": "*.parquet",
 										"enablePartitionDiscovery": false
 									},
 									"formatSettings": {
@@ -84,7 +89,14 @@
 						{
 							"name": "Notebook",
 							"type": "DatabricksNotebook",
-							"dependsOn": [],
+							"dependsOn": [
+								{
+									"activity": "Lookup",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
 							"policy": {
 								"timeout": "0.00:10:00",
 								"retry": 0,
