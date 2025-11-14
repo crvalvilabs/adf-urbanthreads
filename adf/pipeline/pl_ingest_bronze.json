@@ -78,11 +78,6 @@
 				}
 			}
 		],
-		"parameters": {
-			"pFolderPath": {
-				"type": "string"
-			}
-		},
 		"folder": {
 			"name": "Ingest"
 		},
