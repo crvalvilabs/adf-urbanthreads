@@ -52,52 +52,9 @@
 					"isSequential": true,
 					"activities": [
 						{
-							"name": "Lookup",
-							"type": "Lookup",
-							"dependsOn": [],
-							"policy": {
-								"timeout": "0.00:13:00",
-								"retry": 1,
-								"retryIntervalInSeconds": 30,
-								"secureOutput": false,
-								"secureInput": false
-							},
-							"userProperties": [],
-							"typeProperties": {
-								"source": {
-									"type": "ParquetSource",
-									"storeSettings": {
-										"type": "AzureBlobFSReadSettings",
-										"recursive": true,
-										"wildcardFolderPath": {
-											"value": "@concat('landing/', item().name)",
-											"type": "Expression"
-										},
-										"wildcardFileName": "*.parquet",
-										"enablePartitionDiscovery": false
-									},
-									"formatSettings": {
-										"type": "ParquetReadSettings"
-									}
-								},
-								"dataset": {
-									"referenceName": "ds_landing_to_bronze",
-									"type": "DatasetReference"
-								},
-								"firstRowOnly": false
-							}
-						},
-						{
 							"name": "Notebook",
 							"type": "DatabricksNotebook",
-							"dependsOn": [
-								{
-									"activity": "Lookup",
-									"dependencyConditions": [
-										"Succeeded"
-									]
-								}
-							],
+							"dependsOn": [],
 							"policy": {
 								"timeout": "0.00:10:00",
 								"retry": 0,
@@ -108,7 +65,7 @@
 							"userProperties": [],
 							"typeProperties": {
 								"notebookPath": {
-									"value": "@pipeline().parameters.pFileName",
+									"value": "@item().name",
 									"type": "Expression"
 								}
 							},
@@ -122,7 +79,7 @@
 			}
 		],
 		"parameters": {
-			"pFileName": {
+			"pFolderPath": {
 				"type": "string"
 			}
 		},
