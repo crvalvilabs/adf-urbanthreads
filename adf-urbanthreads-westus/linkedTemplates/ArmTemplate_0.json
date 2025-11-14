@@ -542,53 +542,9 @@
 							"isSequential": true,
 							"activities": [
 								{
-									"name": "Lookup",
-									"type": "Lookup",
-									"dependsOn": [],
-									"policy": {
-										"timeout": "0.00:13:00",
-										"retry": 1,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"source": {
-											"type": "ParquetSource",
-											"storeSettings": {
-												"type": "AzureBlobFSReadSettings",
-												"recursive": true,
-												"wildcardFolderPath": {
-													"value": "@concat('landing/', item().name)",
-													"type": "Expression"
-												},
-												"wildcardFileName": "*.parquet",
-												"enablePartitionDiscovery": false
-											},
-											"formatSettings": {
-												"type": "ParquetReadSettings"
-											}
-										},
-										"dataset": {
-											"referenceName": "ds_landing_to_bronze",
-											"type": "DatasetReference",
-											"parameters": {}
-										},
-										"firstRowOnly": false
-									}
-								},
-								{
 									"name": "Notebook",
 									"type": "DatabricksNotebook",
-									"dependsOn": [
-										{
-											"activity": "Lookup",
-											"dependencyConditions": [
-												"Succeeded"
-											]
-										}
-									],
+									"dependsOn": [],
 									"policy": {
 										"timeout": "0.00:10:00",
 										"retry": 0,
@@ -598,9 +554,12 @@
 									},
 									"userProperties": [],
 									"typeProperties": {
-										"notebookPath": {
-											"value": "@pipeline().parameters.pFileName",
-											"type": "Expression"
+										"notebookPath": "/Users/crvalvilabs_outlook.com#ext#@crvalvilabsoutlook.onmicrosoft.com/adf-urbanthreads/databricks/notebooks/ingest_landing_to_bronze",
+										"baseParameters": {
+											"path_name": {
+												"value": "@item().name",
+												"type": "Expression"
+											}
 										}
 									},
 									"linkedServiceName": {
@@ -615,11 +574,6 @@
 				"policy": {
 					"elapsedTimeMetric": {}
 				},
-				"parameters": {
-					"pFileName": {
-						"type": "string"
-					}
-				},
 				"folder": {
 					"name": "Ingest"
 				},
@@ -627,7 +581,6 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/ds_landing_binary')]",
-				"[concat(variables('factoryId'), '/datasets/ds_landing_to_bronze')]",
 				"[concat(variables('factoryId'), '/linkedServices/ls_databricks')]"
 			]
 		}
