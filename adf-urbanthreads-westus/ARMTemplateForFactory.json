@@ -260,7 +260,7 @@
 												"type": "AzureBlobFSReadSettings",
 												"recursive": true,
 												"wildcardFolderPath": {
-													"value": "@item().name",
+													"value": "@concat('landing/', item().name)",
 													"type": "Expression"
 												},
 												"wildcardFileName": "*.parquet",
