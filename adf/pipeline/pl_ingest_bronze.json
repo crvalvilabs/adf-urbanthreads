@@ -64,9 +64,12 @@
 							},
 							"userProperties": [],
 							"typeProperties": {
-								"notebookPath": {
-									"value": "@item().name",
-									"type": "Expression"
+								"notebookPath": "/Users/crvalvilabs_outlook.com#ext#@crvalvilabsoutlook.onmicrosoft.com/adf-urbanthreads/databricks/notebooks/ingest_landing_to_bronze",
+								"baseParameters": {
+									"path_name": {
+										"value": "@item().name",
+										"type": "Expression"
+									}
 								}
 							},
 							"linkedServiceName": {
