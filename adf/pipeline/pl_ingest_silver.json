@@ -1,0 +1,48 @@
+{
+	"name": "pl_ingest_silver",
+	"properties": {
+		"activities": [
+			{
+				"name": "Notebook Ingest Silver",
+				"type": "DatabricksNotebook",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.00:13:00",
+					"retry": 1,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/Users/crvalvilabs_outlook.com#ext#@crvalvilabsoutlook.onmicrosoft.com/adf-urbanthreads/databricks/notebooks/Silver/ingest_bronze_to_silver"
+				},
+				"linkedServiceName": {
+					"referenceName": "ls_databricks",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Fail",
+				"type": "Fail",
+				"dependsOn": [
+					{
+						"activity": "Notebook Ingest Silver",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"message": "Error during ingest data to silver",
+					"errorCode": "500"
+				}
+			}
+		],
+		"folder": {
+			"name": "Ingest"
+		},
+		"annotations": []
+	}
+}
