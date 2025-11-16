@@ -1,0 +1,54 @@
+{
+	"name": "pl_transform_silver",
+	"properties": {
+		"activities": [
+			{
+				"name": "Notebook Transform Data",
+				"type": "DatabricksNotebook",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.00:13:00",
+					"retry": 1,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/Users/crvalvilabs_outlook.com#ext#@crvalvilabsoutlook.onmicrosoft.com/adf-urbanthreads/databricks/notebooks/Silver/transform_data"
+				},
+				"linkedServiceName": {
+					"referenceName": "ls_databricks",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Fail",
+				"type": "Fail",
+				"dependsOn": [
+					{
+						"activity": "Notebook Transform Data",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"message": {
+						"value": "@activity('Notebook Transform Data').output",
+						"type": "Expression"
+					},
+					"errorCode": {
+						"value": "@activity('Notebook Transform Data').output",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"folder": {
+			"name": "Ingest"
+		},
+		"annotations": []
+	}
+}
