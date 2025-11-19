@@ -36,13 +36,10 @@
 				"userProperties": [],
 				"typeProperties": {
 					"message": {
-						"value": "@activity('Notebook Transform Data').output",
+						"value": "@activity('Transform Silver Notebook').output",
 						"type": "Expression"
 					},
-					"errorCode": {
-						"value": "@string(activity('Notebook Transform Data').output)",
-						"type": "Expression"
-					}
+					"errorCode": "500"
 				}
 			}
 		],
