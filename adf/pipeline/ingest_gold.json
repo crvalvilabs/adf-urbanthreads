@@ -14,6 +14,26 @@
 					"secureInput": false
 				},
 				"userProperties": []
+			},
+			{
+				"name": "Fail",
+				"type": "Fail",
+				"dependsOn": [
+					{
+						"activity": "Analytics Notebook",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"message": {
+						"value": "@activity('Analytics Notebook').output",
+						"type": "Expression"
+					},
+					"errorCode": "500"
+				}
 			}
 		],
 		"folder": {

@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Notebook Transform Data",
+				"name": "Transform Silver Notebook",
 				"type": "DatabricksNotebook",
 				"dependsOn": [],
 				"policy": {
@@ -27,7 +27,7 @@
 				"type": "Fail",
 				"dependsOn": [
 					{
-						"activity": "Notebook Transform Data",
+						"activity": "Transform Silver Notebook",
 						"dependencyConditions": [
 							"Failed"
 						]

@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Notebook Ingest Silver",
+				"name": "Silver Notebook",
 				"type": "DatabricksNotebook",
 				"dependsOn": [],
 				"policy": {
@@ -27,7 +27,7 @@
 				"type": "Fail",
 				"dependsOn": [
 					{
-						"activity": "Notebook Ingest Silver",
+						"activity": "Silver Notebook",
 						"dependencyConditions": [
 							"Failed"
 						]
