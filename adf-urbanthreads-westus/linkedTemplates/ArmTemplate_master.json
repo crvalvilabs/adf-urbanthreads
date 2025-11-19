@@ -31,6 +31,10 @@
 			"type": "string",
 			"defaultValue": "sqladmin"
 		},
+		"ls_databricks_properties_typeProperties_existingClusterId": {
+			"type": "string",
+			"defaultValue": "1114-014928-33fdlyib"
+		},
 		"ls_dl_urbanstorage_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://dlurbanstorage.dfs.core.windows.net/"
@@ -79,6 +83,9 @@
 					},
 					"ls_azsql_urban_properties_typeProperties_userName": {
 						"value": "[parameters('ls_azsql_urban_properties_typeProperties_userName')]"
+					},
+					"ls_databricks_properties_typeProperties_existingClusterId": {
+						"value": "[parameters('ls_databricks_properties_typeProperties_existingClusterId')]"
 					},
 					"ls_dl_urbanstorage_properties_typeProperties_url": {
 						"value": "[parameters('ls_dl_urbanstorage_properties_typeProperties_url')]"

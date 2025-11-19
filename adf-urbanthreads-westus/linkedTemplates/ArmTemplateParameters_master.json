@@ -23,6 +23,9 @@
 		"ls_azsql_urban_properties_typeProperties_userName": {
 			"value": "sqladmin"
 		},
+		"ls_databricks_properties_typeProperties_existingClusterId": {
+			"value": "1114-014928-33fdlyib"
+		},
 		"ls_dl_urbanstorage_properties_typeProperties_url": {
 			"value": "https://dlurbanstorage.dfs.core.windows.net/"
 		},
