@@ -13,7 +13,14 @@
 					"secureOutput": false,
 					"secureInput": false
 				},
-				"userProperties": []
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/Users/crvalvilabs_outlook.com#ext#@crvalvilabsoutlook.onmicrosoft.com/adf-urbanthreads/databricks/notebooks/Gold/ingest_data_gold"
+				},
+				"linkedServiceName": {
+					"referenceName": "ls_databricks",
+					"type": "LinkedServiceReference"
+				}
 			},
 			{
 				"name": "Fail",
